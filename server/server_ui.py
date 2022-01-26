@@ -6,7 +6,8 @@ import server
 
 ui = uic.loadUiType("server_window.ui")[0]
 
-class client_window(QWidget, ui):
+class server_window(QWidget, ui):
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -16,7 +17,6 @@ class client_window(QWidget, ui):
         self.guest.setColumnWidth(1, 169)
 
 
-
     def toggle_btn(self, state):
         if state:
             ip = self.input_ip.text()
@@ -24,7 +24,9 @@ class client_window(QWidget, ui):
             if self.server_socket.start(ip, port):
                 self.connect_btn.setText("종료")
         else:
-            pass
+            self.server_socket.stop()
+            self.msg_list.clear()
+            self.connect_btn.setText("연결")
 
     def update_client(self, addr, isConnect=False):
         row = self.guest.rowCount()
@@ -41,8 +43,9 @@ class client_window(QWidget, ui):
                     self.guest.removeRow(one_row)
                     break
 
-    def update_msg(self, msg_list):
-        pass
+    def update_msg(self, msg):
+        self.msg_list.addItem(QListWidgetItem(msg))
+        self.msg_list.setCurrentRow(self.msg_list.count() - 1)
 
     def sendMsg(self, msg):
         if not self.server_socket.bListen:
@@ -50,20 +53,29 @@ class client_window(QWidget, ui):
             return
 
         send_msg = self.send_msg.text()
-        self.msg_list.addItem(QListWidgetItem(send_msg))
-        self.msg_list.setCurrentRow(self.msg_list.count() - 1)
+        self.update_msg(send_msg)
         self.send_msg.clear()
         self.send_msg.setFocus()
 
 
     def clearMsg(self):
-        pass
+        self.msg_list.clear()
 
+    def closeEvent(self, e):
+        try:
+            self.server_socket.stop()
+        except TypeError:
+            pass
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    chat_window = client_window()
-    chat_window.setWindowTitle('osstalk')
+    chat_window = server_window()
+    chat_window.setWindowTitle('oss talk')
     chat_window.setWindowIcon(QIcon('teddy-bear.png'))
     chat_window.show()
-    app.exec_()
+    try:
+        app.exec_()
+    except Exception as e:
+        print("Error 발생! ㅠㅠ : ", e)
+    else:
+        print("-"*10,"잘가요", "-"*10)

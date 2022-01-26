@@ -38,8 +38,16 @@ class ServerSocket(QObject):
             print('Server Listening...')
         return True
 
-    def stop(self, server):
-        pass
+    def stop(self):
+        self.bListen = False
+        try:
+            if hasattr(self, 'server'):
+                self.server.close()
+                print('Server Stop')
+                print('잠시만 기다려주세요! 서버가 닫힐 때까지 시간이 다소 소요됩니다...')
+        except AttributeError:
+            pass
+
 
     def listen(self, server):
         while self.bListen:
