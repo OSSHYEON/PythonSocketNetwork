@@ -1,6 +1,6 @@
 import sys, signal, socketio
 from PyQt5 import uic, QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QListWidgetItem, QLineEdit
+from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QListWidgetItem, QLineEdit, QListWidget
 from PyQt5.QtGui import QIcon
 import server
 
@@ -14,7 +14,8 @@ class client_window(QWidget, ui):
         self.connect_btn.setCheckable(True)
         self.guest.setColumnWidth(0, 169)
         self.guest.setColumnWidth(1, 169)
-        self.sended_msg = QLineEdit()
+
+
 
     def toggle_btn(self, state):
         if state:
@@ -40,16 +41,23 @@ class client_window(QWidget, ui):
                     self.guest.removeRow(one_row)
                     break
 
-    def update_msg(self, msg):
-        self.msg.addItem(QListWidgetItem(msg))
-        self.msg.setCurrentRow(self.msg.count()-1)
+    def update_msg(self, msg_list):
+        pass
 
-    def send_msg(self, msg):
+    def sendMsg(self, msg):
         if not self.server_socket.bListen:
-            self.sended_msg.text()
-            self.update_msg(self.sended_msg)
-            self.sended_msg.clear()
+            self.send_msg.clear()
+            return
 
+        send_msg = self.send_msg.text()
+        self.msg_list.addItem(QListWidgetItem(send_msg))
+        self.msg_list.setCurrentRow(self.msg_list.count() - 1)
+        self.send_msg.clear()
+        self.send_msg.setFocus()
+
+
+    def clearMsg(self):
+        pass
 
 
 if __name__ == "__main__":
