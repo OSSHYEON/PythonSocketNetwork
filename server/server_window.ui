@@ -128,7 +128,7 @@
      <string notr="true">background-color: white;</string>
     </property>
     <property name="text">
-     <string>192.168.10.89</string>
+     <string>127.0.0.1</string>
     </property>
    </widget>
   </widget>
