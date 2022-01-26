@@ -17,12 +17,20 @@ class server_window(QWidget, ui):
         self.guest.setColumnWidth(1, 169)
 
 
+
+    def __del__(self):
+        self.stop()
+
     def toggle_btn(self, state):
         if state:
             ip = self.input_ip.text()
             port = self.input_port.text()
             if self.server_socket.start(ip, port):
                 self.connect_btn.setText("종료")
+            else:
+                self.server_socket.stop()
+                self.msg_list.clear()
+                self.connect_btn.setText("연결")
         else:
             self.server_socket.stop()
             self.msg_list.clear()
@@ -54,6 +62,7 @@ class server_window(QWidget, ui):
 
         send_msg = self.send_msg.text()
         self.update_msg(send_msg)
+        self.server_socket.send(send_msg)
         self.send_msg.clear()
         self.send_msg.setFocus()
 

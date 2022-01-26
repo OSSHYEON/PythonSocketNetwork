@@ -54,7 +54,6 @@ class ServerSocket(QObject):
             server.listen(5)
             try:
                 client, addr = server.accept()
-
             except Exception as e:
                 print('Accept Error : ', e)
                 break
@@ -86,8 +85,9 @@ class ServerSocket(QObject):
 
     def send(self, msg):
         try:
-            print(len(self.clients))
+
             for client in self.clients:
+                print(msg)
                 client.send(msg.encode())
 
         except Exception as e:
