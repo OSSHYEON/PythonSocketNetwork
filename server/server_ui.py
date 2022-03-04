@@ -4,10 +4,17 @@ from PyQt5.QtWidgets import QWidget, QApplication, QTableWidgetItem, QListWidget
 from PyQt5.QtGui import QIcon
 import server
 
-ui = uic.loadUiType("server_window.ui")[0]
+ui = uic.loadUiType("server_window.ui")[0]  # PyQt designer로 작성한 ui 파일 불러오기
 
 class server_window(QWidget, ui):
-
+    """
+    부모 윈도우 에서 버튼을 클릭하면, 데이터를 받아와 소켓 통신을 실행하는 클래스
+    client_ui.py 파일의 client_window 클래스 실행 시 호출된다.
+    :__init__:  불러온 ui 파일 바탕으로 윈도우 생성
+                server.py 파일의 ServerSocket 클래스 호출, ServerSocket의 객체를 self.server_socket이라는 이름으로 생성한다.
+                designer 파일에서 작성한 connect_btn에 setCheckable() 함수를 사용해 True로 설정하여, 버튼을 누른 상태와 그렇지 않은 상태를 구분
+                디자인 수정 추가
+    """
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -17,11 +24,9 @@ class server_window(QWidget, ui):
         self.guest.setColumnWidth(1, 169)
 
 
-
-    def __del__(self):
-        self.stop()
-
-    def toggle_btn(self, state):
+    def toggle_btn(self, state):    # ip, port 번호 받고, 통신이 시작했을 때는 버튼에 종료, 통신을 끊었을 때는 버튼에 연결이라는 텍스트를 띄우는 함수
+                                    # 서버 실행시, ip와 port번호를 ServerSocket클래스로 전달해 리슨 소켓 생성, 실행.
+                                    # 종료시, 서버 소켓 클래스의 close()함수 호출해 서버 소켓 닫는 동작 수행
         if state:
             ip = self.input_ip.text()
             port = self.input_port.text()
@@ -36,7 +41,8 @@ class server_window(QWidget, ui):
             self.msg_list.clear()
             self.connect_btn.setText("연결")
 
-    def update_client(self, addr, isConnect=False):
+
+    def update_client(self, addr, isConnect=False):     # 접속한 클라이언트를 표에 띄우는 함수
         row = self.guest.rowCount()
         if isConnect:
             self.guest.setRowCount(row+1)
@@ -55,7 +61,7 @@ class server_window(QWidget, ui):
         self.msg_list.addItem(QListWidgetItem(msg))
         self.msg_list.setCurrentRow(self.msg_list.count() - 1)
 
-    def sendMsg(self, msg):
+    def sendMsg(self):  # 보낼 메시지에 글을 적고 보내기 버튼 눌렀을 때, 입력한 내용을 ServerSocket으로 전달해 모든 클라이언트에게 메시지 송신하는 역할과 연결된다
         if not self.server_socket.bListen:
             self.send_msg.clear()
             return
